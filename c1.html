@@ -1,0 +1,1476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Bank Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: #1e3a5f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #162d4a;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        nav button:hover {
+            background: #28527a;
+        }
+
+        /* Main */
+        main {
+            padding: 25px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h2 {
+            color: #1e3a5f;
+            margin-bottom: 20px;
+        }
+
+        /* Dashboard Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px #ccc;
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #1e3a5f;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* Forms */
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px #ddd;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            background: #1e3a5f;
+        }
+
+        .btn:hover {
+            background: #28527a;
+        }
+
+        .danger {
+            background: #c0392b;
+        }
+
+        .danger:hover {
+            background: #e74c3c;
+        }
+
+        .success {
+            background: #218c4a;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            box-shadow: 0 3px 10px #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* Search */
+        .search {
+            margin-bottom: 20px;
+        }
+
+        .search input {
+            max-width: 400px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            background: #162d4a;
+            color: white;
+            padding: 15px;
+            margin-top: 30px;
+        }
+
+        /* Message */
+        #message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #218c4a;
+            color: white;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Book Bank Management System</h1>
+    <p>Manage Books, Students, Issue and Return Records</p>
+</header>
+
+<nav>
+    <button onclick="showSection('dashboard')">Dashboard</button>
+    <button onclick="showSection('books')">Books</button>
+    <button onclick="showSection('students')">Students</button>
+    <button onclick="showSection('issue')">Issue Book</button>
+    <button onclick="showSection('return')">Return Book</button>
+    <button onclick="showSection('reports')">Reports</button>
+</nav>
+
+<div id="message"></div>
+
+<main>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+
+        <h2>Dashboard</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Books</h3>
+                <p id="totalBooks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Available Books</h3>
+                <p id="availableBooks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="totalStudents">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Issued Books</h3>
+                <p id="issuedBooks">0</p>
+            </div>
+
+        </div>
+
+        <div class="table-container">
+
+            <h2>Recent Transactions</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Student ID</th>
+                        <th>Book ID</th>
+                        <th>Issue Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="dashboardTransactions">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- BOOK MANAGEMENT -->
+    <section id="books" class="section">
+
+        <h2>Book Management</h2>
+
+        <form id="bookForm">
+
+            <div class="form-group">
+                <label>Book ID</label>
+                <input type="text" id="bookId" required>
+            </div>
+
+            <div class="form-group">
+                <label>ISBN</label>
+                <input type="text" id="isbn" required>
+            </div>
+
+            <div class="form-group">
+                <label>Book Title</label>
+                <input type="text" id="bookTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label>Author</label>
+                <input type="text" id="author" required>
+            </div>
+
+            <div class="form-group">
+                <label>Publisher</label>
+                <input type="text" id="publisher">
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select id="department">
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="CIVIL">CIVIL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="quantity" min="1" required>
+            </div>
+
+            <button class="btn" type="submit">Add Book</button>
+
+        </form>
+
+
+        <div class="search">
+            <input
+                type="text"
+                id="bookSearch"
+                placeholder="Search by title, author or book ID..."
+                onkeyup="searchBooks()">
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Book ID</th>
+                        <th>ISBN</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Department</th>
+                        <th>Quantity</th>
+                        <th>Available</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="bookTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- STUDENT MANAGEMENT -->
+    <section id="students" class="section">
+
+        <h2>Student Management</h2>
+
+        <form id="studentForm">
+
+            <div class="form-group">
+                <label>Student ID</label>
+                <input type="text" id="studentId" required>
+            </div>
+
+            <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" id="studentName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select id="studentDepartment">
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="CIVIL">CIVIL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Year</label>
+                <select id="year">
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <button class="btn" type="submit">Register Student</button>
+
+        </form>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ISSUE BOOK -->
+    <section id="issue" class="section">
+
+        <h2>Issue Book</h2>
+
+        <form id="issueForm">
+
+            <div class="form-group">
+                <label>Student ID</label>
+                <input type="text" id="issueStudentId" required>
+            </div>
+
+            <div class="form-group">
+                <label>Book ID</label>
+                <input type="text" id="issueBookId" required>
+            </div>
+
+            <button class="btn" type="submit">Issue Book</button>
+
+        </form>
+
+    </section>
+
+
+    <!-- RETURN BOOK -->
+    <section id="return" class="section">
+
+        <h2>Return Book</h2>
+
+        <form id="returnForm">
+
+            <div class="form-group">
+                <label>Transaction ID</label>
+                <input type="text" id="returnTransactionId" required>
+            </div>
+
+            <button class="btn success" type="submit">
+                Return Book
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- REPORTS -->
+    <section id="reports" class="section">
+
+        <h2>Reports</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Transactions</h3>
+                <p id="totalTransactions">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Currently Issued</h3>
+                <p id="currentIssued">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Returned Books</h3>
+                <p id="returnedBooks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Overdue Books</h3>
+                <p id="overdueBooks">0</p>
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Student ID</th>
+                        <th>Book ID</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reportTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+    <p>© 2026 Book Bank Management System</p>
+</footer>
+
+
+<script>
+
+    /* =========================
+       DATABASE USING LOCALSTORAGE
+       ========================= */
+
+    let books = JSON.parse(localStorage.getItem("books")) || [
+        {
+            id: "B001",
+            isbn: "9780131103627",
+            title: "Programming in C",
+            author: "Dennis Ritchie",
+            publisher: "Pearson",
+            department: "CSE",
+            quantity: 5,
+            available: 5
+        },
+        {
+            id: "B002",
+            isbn: "9780132350884",
+            title: "Clean Code",
+            author: "Robert Martin",
+            publisher: "Pearson",
+            department: "CSE",
+            quantity: 4,
+            available: 4
+        }
+    ];
+
+
+    let students = JSON.parse(localStorage.getItem("students")) || [
+        {
+            id: "S001",
+            name: "Rahul",
+            department: "CSE",
+            year: "2",
+            phone: "9876543210",
+            email: "rahul@gmail.com"
+        }
+    ];
+
+
+    let transactions =
+        JSON.parse(localStorage.getItem("transactions")) || [];
+
+
+    function saveData() {
+
+        localStorage.setItem("books", JSON.stringify(books));
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+        localStorage.setItem(
+            "transactions",
+            JSON.stringify(transactions)
+        );
+
+    }
+
+
+    /* =========================
+       NAVIGATION
+       ========================= */
+
+    function showSection(sectionId) {
+
+        let sections =
+            document.querySelectorAll(".section");
+
+        sections.forEach(section => {
+            section.classList.remove("active");
+        });
+
+        document
+            .getElementById(sectionId)
+            .classList.add("active");
+
+        updateDashboard();
+        displayReports();
+
+    }
+
+
+    /* =========================
+       MESSAGE
+       ========================= */
+
+    function showMessage(message) {
+
+        let msg = document.getElementById("message");
+
+        msg.innerText = message;
+
+        msg.style.display = "block";
+
+        setTimeout(() => {
+
+            msg.style.display = "none";
+
+        }, 2500);
+
+    }
+
+
+    /* =========================
+       BOOK MANAGEMENT
+       ========================= */
+
+    document
+        .getElementById("bookForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            let id =
+                document.getElementById("bookId").value;
+
+            let existingBook =
+                books.find(book => book.id === id);
+
+            if (existingBook) {
+
+                showMessage("Book ID already exists!");
+
+                return;
+
+            }
+
+
+            let quantity =
+                parseInt(
+                    document.getElementById("quantity").value
+                );
+
+
+            let book = {
+
+                id: id,
+
+                isbn:
+                    document.getElementById("isbn").value,
+
+                title:
+                    document.getElementById("bookTitle").value,
+
+                author:
+                    document.getElementById("author").value,
+
+                publisher:
+                    document.getElementById("publisher").value,
+
+                department:
+                    document.getElementById("department").value,
+
+                quantity: quantity,
+
+                available: quantity
+
+            };
+
+
+            books.push(book);
+
+            saveData();
+
+            displayBooks();
+
+            updateDashboard();
+
+            this.reset();
+
+            showMessage("Book added successfully!");
+
+        });
+
+
+    function displayBooks(bookList = books) {
+
+        let table =
+            document.getElementById("bookTable");
+
+        table.innerHTML = "";
+
+
+        bookList.forEach(book => {
+
+            let row = table.insertRow();
+
+            row.innerHTML = `
+
+                <td>${book.id}</td>
+
+                <td>${book.isbn}</td>
+
+                <td>${book.title}</td>
+
+                <td>${book.author}</td>
+
+                <td>${book.publisher}</td>
+
+                <td>${book.department}</td>
+
+                <td>${book.quantity}</td>
+
+                <td>${book.available}</td>
+
+                <td>
+                    <button
+                        class="btn danger"
+                        onclick="deleteBook('${book.id}')">
+                        Delete
+                    </button>
+                </td>
+
+            `;
+
+        });
+
+    }
+
+
+    function deleteBook(bookId) {
+
+        let issued =
+            transactions.some(
+                t =>
+                    t.bookId === bookId &&
+                    t.status === "Issued"
+            );
+
+        if (issued) {
+
+            showMessage(
+                "Cannot delete an issued book!"
+            );
+
+            return;
+
+        }
+
+
+        books =
+            books.filter(
+                book => book.id !== bookId
+            );
+
+
+        saveData();
+
+        displayBooks();
+
+        updateDashboard();
+
+        showMessage("Book deleted!");
+
+    }
+
+
+    function searchBooks() {
+
+        let search =
+            document
+                .getElementById("bookSearch")
+                .value
+                .toLowerCase();
+
+
+        let filtered =
+            books.filter(book =>
+
+                book.id.toLowerCase().includes(search) ||
+
+                book.title.toLowerCase().includes(search) ||
+
+                book.author.toLowerCase().includes(search)
+
+            );
+
+
+        displayBooks(filtered);
+
+    }
+
+
+    /* =========================
+       STUDENT MANAGEMENT
+       ========================= */
+
+    document
+        .getElementById("studentForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            let id =
+                document.getElementById("studentId").value;
+
+
+            if (
+                students.some(student =>
+                    student.id === id
+                )
+            ) {
+
+                showMessage(
+                    "Student ID already exists!"
+                );
+
+                return;
+
+            }
+
+
+            let student = {
+
+                id: id,
+
+                name:
+                    document.getElementById("studentName").value,
+
+                department:
+                    document.getElementById(
+                        "studentDepartment"
+                    ).value,
+
+                year:
+                    document.getElementById("year").value,
+
+                phone:
+                    document.getElementById("phone").value,
+
+                email:
+                    document.getElementById("email").value
+
+            };
+
+
+            students.push(student);
+
+            saveData();
+
+            displayStudents();
+
+            updateDashboard();
+
+            this.reset();
+
+            showMessage(
+                "Student registered successfully!"
+            );
+
+        });
+
+
+    function displayStudents() {
+
+        let table =
+            document.getElementById("studentTable");
+
+        table.innerHTML = "";
+
+
+        students.forEach(student => {
+
+            let row = table.insertRow();
+
+            row.innerHTML = `
+
+                <td>${student.id}</td>
+
+                <td>${student.name}</td>
+
+                <td>${student.department}</td>
+
+                <td>${student.year}</td>
+
+                <td>${student.phone}</td>
+
+                <td>${student.email}</td>
+
+                <td>
+                    <button
+                        class="btn danger"
+                        onclick="deleteStudent('${student.id}')">
+                        Delete
+                    </button>
+                </td>
+
+            `;
+
+        });
+
+    }
+
+
+    function deleteStudent(studentId) {
+
+        let hasBook =
+            transactions.some(
+                t =>
+                    t.studentId === studentId &&
+                    t.status === "Issued"
+            );
+
+
+        if (hasBook) {
+
+            showMessage(
+                "Student has an issued book!"
+            );
+
+            return;
+
+        }
+
+
+        students =
+            students.filter(
+                student => student.id !== studentId
+            );
+
+
+        saveData();
+
+        displayStudents();
+
+        updateDashboard();
+
+        showMessage(
+            "Student deleted!"
+        );
+
+    }
+
+
+    /* =========================
+       ISSUE BOOK
+       ========================= */
+
+    document
+        .getElementById("issueForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            let studentId =
+                document.getElementById(
+                    "issueStudentId"
+                ).value;
+
+
+            let bookId =
+                document.getElementById(
+                    "issueBookId"
+                ).value;
+
+
+            let student =
+                students.find(
+                    s => s.id === studentId
+                );
+
+
+            if (!student) {
+
+                showMessage(
+                    "Student not found!"
+                );
+
+                return;
+
+            }
+
+
+            let book =
+                books.find(
+                    b => b.id === bookId
+                );
+
+
+            if (!book) {
+
+                showMessage(
+                    "Book not found!"
+                );
+
+                return;
+
+            }
+
+
+            if (book.available <= 0) {
+
+                showMessage(
+                    "Book is not available!"
+                );
+
+                return;
+
+            }
+
+
+            let alreadyIssued =
+                transactions.some(
+                    t =>
+                        t.studentId === studentId &&
+                        t.bookId === bookId &&
+                        t.status === "Issued"
+                );
+
+
+            if (alreadyIssued) {
+
+                showMessage(
+                    "This student already has this book!"
+                );
+
+                return;
+
+            }
+
+
+            let today =
+                new Date();
+
+
+            let dueDate =
+                new Date();
+
+            dueDate.setDate(
+                today.getDate() + 14
+            );
+
+
+            let transaction = {
+
+                id:
+                    "T" +
+                    String(
+                        transactions.length + 1
+                    ).padStart(3, "0"),
+
+                studentId: studentId,
+
+                bookId: bookId,
+
+                issueDate:
+                    formatDate(today),
+
+                dueDate:
+                    formatDate(dueDate),
+
+                returnDate: "",
+
+                status: "Issued"
+
+            };
+
+
+            transactions.push(transaction);
+
+            book.available--;
+
+            saveData();
+
+            updateDashboard();
+
+            displayBooks();
+
+            displayReports();
+
+            this.reset();
+
+            showMessage(
+                "Book issued successfully!"
+            );
+
+        });
+
+
+    /* =========================
+       RETURN BOOK
+       ========================= */
+
+    document
+        .getElementById("returnForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            let transactionId =
+                document.getElementById(
+                    "returnTransactionId"
+                ).value;
+
+
+            let transaction =
+                transactions.find(
+                    t => t.id === transactionId
+                );
+
+
+            if (!transaction) {
+
+                showMessage(
+                    "Transaction not found!"
+                );
+
+                return;
+
+            }
+
+
+            if (transaction.status === "Returned") {
+
+                showMessage(
+                    "Book is already returned!"
+                );
+
+                return;
+
+            }
+
+
+            transaction.status = "Returned";
+
+            transaction.returnDate =
+                formatDate(new Date());
+
+
+            let book =
+                books.find(
+                    b => b.id === transaction.bookId
+                );
+
+
+            if (book) {
+
+                book.available++;
+
+            }
+
+
+            saveData();
+
+            updateDashboard();
+
+            displayBooks();
+
+            displayReports();
+
+            this.reset();
+
+            showMessage(
+                "Book returned successfully!"
+            );
+
+        });
+
+
+    /* =========================
+       DATE FUNCTION
+       ========================= */
+
+    function formatDate(date) {
+
+        let year =
+            date.getFullYear();
+
+        let month =
+            String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
+
+        let day =
+            String(
+                date.getDate()
+            ).padStart(2, "0");
+
+
+        return `${year}-${month}-${day}`;
+
+    }
+
+
+    /* =========================
+       DASHBOARD
+       ========================= */
+
+    function updateDashboard() {
+
+        let totalCopies =
+            books.reduce(
+                (sum, book) =>
+                    sum + book.quantity,
+                0
+            );
+
+
+        let availableCopies =
+            books.reduce(
+                (sum, book) =>
+                    sum + book.available,
+                0
+            );
+
+
+        let issued =
+            transactions.filter(
+                t => t.status === "Issued"
+            ).length;
+
+
+        document.getElementById(
+            "totalBooks"
+        ).innerText = totalCopies;
+
+
+        document.getElementById(
+            "availableBooks"
+        ).innerText = availableCopies;
+
+
+        document.getElementById(
+            "totalStudents"
+        ).innerText = students.length;
+
+
+        document.getElementById(
+            "issuedBooks"
+        ).innerText = issued;
+
+
+        displayDashboardTransactions();
+
+    }
+
+
+    function displayDashboardTransactions() {
+
+        let table =
+            document.getElementById(
+                "dashboardTransactions"
+            );
+
+
+        table.innerHTML = "";
+
+
+        transactions
+            .slice(-5)
+            .reverse()
+            .forEach(t => {
+
+                let row = table.insertRow();
+
+                row.innerHTML = `
+
+                    <td>${t.id}</td>
+
+                    <td>${t.studentId}</td>
+
+                    <td>${t.bookId}</td>
+
+                    <td>${t.issueDate}</td>
+
+                    <td>${t.status}</td>
+
+                `;
+
+            });
+
+    }
+
+
+    /* =========================
+       REPORTS
+       ========================= */
+
+    function displayReports() {
+
+        let table =
+            document.getElementById(
+                "reportTable"
+            );
+
+
+        table.innerHTML = "";
+
+
+        transactions.forEach(t => {
+
+            let row =
+                table.insertRow();
+
+
+            row.innerHTML = `
+
+                <td>${t.id}</td>
+
+                <td>${t.studentId}</td>
+
+                <td>${t.bookId}</td>
+
+                <td>${t.issueDate}</td>
+
+                <td>${t.dueDate}</td>
+
+                <td>${t.returnDate || "-"}</td>
+
+                <td>${getStatus(t)}</td>
+
+            `;
+
+        });
+
+
+        let issued =
+            transactions.filter(
+                t => t.status === "Issued"
+            ).length;
+
+
+        let returned =
+            transactions.filter(
+                t => t.status === "Returned"
+            ).length;
+
+
+        let overdue =
+            transactions.filter(
+                t =>
+                    t.status === "Issued" &&
+                    new Date(t.dueDate) < new Date()
+            ).length;
+
+
+        document.getElementById(
+            "totalTransactions"
+        ).innerText =
+            transactions.length;
+
+
+        document.getElementById(
+            "currentIssued"
+        ).innerText =
+            issued;
+
+
+        document.getElementById(
+            "returnedBooks"
+        ).innerText =
+            returned;
+
+
+        document.getElementById(
+            "overdueBooks"
+        ).innerText =
+            overdue;
+
+    }
+
+
+    function getStatus(transaction) {
+
+        if (transaction.status === "Returned") {
+
+            return "Returned";
+
+        }
+
+
+        if (
+            new Date(transaction.dueDate) <
+            new Date()
+        ) {
+
+            return "Overdue";
+
+        }
+
+
+        return "Issued";
+
+    }
+
+
+    /* =========================
+       INITIAL LOAD
+       ========================= */
+
+    displayBooks();
+
+    displayStudents();
+
+    updateDashboard();
+
+    displayReports();
+
+</script>
+
+</body>
+</html>
+
